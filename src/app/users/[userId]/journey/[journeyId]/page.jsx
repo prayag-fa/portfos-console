@@ -57,15 +57,14 @@ export default function JourneyTimelinePage({ params }) {
   };
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="space-y-4">
       <JourneySummary journey={journey} />
       <AccountsOverview accounts={journey.accounts} />
 
       {/* Timeline */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">Journey Timeline</h3>
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <h3 className="text-base font-semibold text-gray-900 mb-4">Journey Timeline</h3>
         <div className="relative">
-          {console.log("journey.timeline", journey.timeline[1].accounts)}
           {journey.timeline.map((step, index) => (
             <TimelineStep
               key={stepActions[index].name}

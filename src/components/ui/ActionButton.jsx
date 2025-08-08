@@ -1,3 +1,7 @@
+"use client";
+
+import React from "react";
+
 const ActionButton = ({ icon, onClick, title }) => {
   const Icon = icon;
   return (

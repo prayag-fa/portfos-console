@@ -1329,6 +1329,10 @@ export const stepActions = [
         icon: RotateCcw,
         onClick: () => console.log(`Retrigger webhook`),
         title: "Retrigger Webhook",
+      }, {
+        icon: RefreshCw,
+        onClick: () => console.log(`Re-trigger data backfilling`),
+        title: "Re-trigger Data Backfilling",
       }
     ],
   },

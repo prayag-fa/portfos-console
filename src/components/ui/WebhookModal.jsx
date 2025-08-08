@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { X, Webhook, RotateCcw, RefreshCw, Clock, Activity } from "lucide-react";
 import { formatDateTime, getStatusTextColor, getRelativeTime, getTooltipText } from "@/lib/utils/formatters";

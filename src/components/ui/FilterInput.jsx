@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Search, ChevronDown, Calendar as CalendarIcon } from "lucide-react";
 

@@ -29,21 +29,21 @@ export default function RefreshDetailsPage({ params }) {
   }
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="space-y-4">
       {/* Refresh Summary */}
       <RefreshSummary refreshData={refreshData} />
 
       {/* Accounts Overview */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Accounts Overview</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <h2 className="text-base font-semibold text-gray-900 mb-3">Accounts Overview</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {refreshData.accounts.map((account) => (
-            <div key={account.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-900">{account.id}</span>
+            <div key={account.id} className="border border-gray-200 rounded-md p-3 hover:shadow-sm transition-shadow duration-200">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-medium text-gray-900">{account.id}</span>
                 <span className="text-xs text-gray-500">({account.type})</span>
               </div>
-              <div className="text-xs text-gray-600 mb-2">{account.maskedNumber}</div>
+              <div className="text-xs text-gray-600 mb-1">{account.maskedNumber}</div>
               <div className="text-xs text-gray-500">Vintage: {account.vintage}</div>
             </div>
           ))}
@@ -51,9 +51,9 @@ export default function RefreshDetailsPage({ params }) {
       </div>
 
       {/* Refresh Timeline */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-6">Refresh Timeline</h2>
-        <div className="space-y-6">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <h2 className="text-base font-semibold text-gray-900 mb-4">Refresh Timeline</h2>
+        <div className="space-y-4">
           {refreshData.timeline.map((step, index) => (
             <TimelineStep
               key={refreshStepActions[index]?.name || index}
