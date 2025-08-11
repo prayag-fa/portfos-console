@@ -10,11 +10,19 @@ import { getRelativeTime, getTooltipText } from "@/lib/utils/formatters";
 import StatusBadge from "@/components/ui/StatusBadge";
 import DataTable from "@/components/ui/DataTable";
 import PageContainer from "@/components/layout/PageContainer";
+import { ChevronRight, Users, User } from "lucide-react";
+import { usePageMetadata } from "@/hooks/usePageMetadata";
 
 export default function UserJourneysPage() {
   const params = useParams();
   const userId = params.userId;
   const tableConfig = getTableConfig('journeys');
+
+  // Set page metadata
+  usePageMetadata("User Details", [
+    { label: "Users", href: "/users", icon: <Users className="w-3 h-3" /> },
+    { label: "User Details", href: `/users/${userId}`, icon: <User className="w-3 h-3" />, isLast: true }
+  ]);
 
   // Get journeys for this user
   const userJourneys = useMemo(() => {
@@ -90,9 +98,7 @@ export default function UserJourneysPage() {
           href={`/users/${userId}/journey/${journey.id}`}
           className="inline-flex items-center p-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors duration-150"
         >
-          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
+          <ChevronRight className="w-4 h-4" />
         </Link>
       )
     }

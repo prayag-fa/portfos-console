@@ -10,6 +10,7 @@ import {
   Database
 } from "lucide-react";
 import { useTheme } from "@/hooks/useTheme";
+import { usePageMetadata } from "@/hooks/usePageMetadata";
 import { calculateDashboardMetrics, generateActivityData, generateRefreshData, generateJourneyMetricsData } from "@/lib/utils/dashboardData";
 import ActivityChart from "@/components/charts/ActivityChart";
 import RefreshChart from "@/components/charts/RefreshChart";
@@ -17,10 +18,16 @@ import JourneyMetricsChart from "@/components/charts/JourneyMetricsChart";
 import KPICard from "@/components/dashboard/KPICard";
 import TrendCard from "@/components/dashboard/TrendCard";
 import PageContainer from "@/components/layout/PageContainer";
+import { ChartNoAxesCombined } from "lucide-react";
 
 export default function Dashboard() {
   const { getCurrentThemeColors } = useTheme();
   const colors = getCurrentThemeColors();
+
+  // Set page metadata
+  usePageMetadata("Dashboard", [
+    { label: "Dashboard", href: "/dashboard", icon: <ChartNoAxesCombined className="w-3 h-3" />, isLast: true }
+  ]);
 
   // Get calculated metrics
   const {

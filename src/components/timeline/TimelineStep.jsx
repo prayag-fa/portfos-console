@@ -45,7 +45,8 @@ export default function TimelineStep({
         )}
       </div>
 
-      <div className="flex-1 bg-gray-50 rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow duration-200">
+      <div className="flex-1 flex flex-col gap-4 bg-gray-50 rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow duration-200">
+        <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-gray-900">
@@ -53,82 +54,107 @@ export default function TimelineStep({
             </span>
             <StatusBadge status={step.status} />
           </div>
-          <span 
-            className="text-xs text-gray-500 cursor-help"
-            title={getTooltipText(step.timestamp)}
-          >
-            {getRelativeTime(step.timestamp)}
-          </span>
+          {stepAction && stepAction.stepLevelTime && 
+            <span 
+              className="text-xs text-gray-500 cursor-help"
+              title={getTooltipText(step.timestamp)}
+            >
+              {getRelativeTime(step.timestamp)}
+            </span>
+          }
         </div>
-
-        <div className="grid grid-cols-2 gap-4 text-xs text-gray-600 mb-3 mt-2">
-          <div>
-            <span className="font-medium">Duration:</span> {step.duration || "--"}
-          </div>
-        </div>
-        {stepAction && stepAction.stepLevelActions && stepAction.stepLevelActions.length > 0 && (
-          <div className="flex flex-wrap gap-1">
-            {stepAction.stepLevelActions.map((action, idx) => (
-              <ActionButton
-                key={idx}
-                icon={action.icon}
-                onClick={action.onClick}
-                title={action.title}
-              />
-            ))}
-          </div>
-        )}
-        {step.accounts && step.accounts.length > 0 && (
-          <div className="border-t border-gray-200 pt-3">
-            <h5 className="text-xs font-medium text-gray-700 mb-2">Account-wise Actions</h5>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-2">
-              {step.accounts.map((account, idx) => {
-                const _account = accounts.find(acc => acc.id === account.id);
-
-                if(!["Mutual Funds", "Equities"].includes(_account.type) && name === "Data Back Filling") {
-                  return null;
-                }
-                return (
-                  <div key={idx} className="border border-gray-200 rounded-md p-2 bg-white">
-                    <div className="flex items-center justify-between mb-1">
-                      <div className="flex items-center gap-1">
-                        <span className="text-xs font-medium text-gray-900">{account.id}</span>
-                        {_account && (
-                          <span className="text-xs text-gray-500">({_account.type})</span>
-                        )}
-                      </div>
-                      <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium ${
-                        account.status === "success"
-                          ? "text-green-600 bg-green-100"
-                          : account.status === "partial"
-                          ? "text-yellow-600 bg-yellow-100"
-                          : "text-red-600 bg-red-100"
-                      }`}>
-                        {account.status}
-                      </span>
-                    </div>
-
-                    {stepAction && stepAction.accountLevelActions && stepAction.accountLevelActions.length > 0 && (
-                      <div className="flex flex-wrap gap-1">
-                        {stepAction.accountLevelActions.map((action, idx) => (
-                          <ActionButton key={idx} icon={action.icon} onClick={action.onClick} title={action.title} />
-                        ))}
-                      </div>
-                    )}
-
-                    {name === "Data Back Filling" && account.yearlyData && (
-                      <BackfillingYears
-                        yearlyData={account.yearlyData}
-                        accountId={account.id}
-                        index={index}
-                      />
-                    )}
-                  </div>
-                );
-              })}
+          {stepAction && stepAction.stepLevelTime && 
+            <div className="flex items-center justify-between">
+                <div className="text-xs text-gray-600">
+                  <span className="font-medium">Duration:</span> {step.duration || "--"}
+                </div>
             </div>
-          </div>
-        )}
+          }
+        </div>
+        <div className="flex flex-col gap-4">
+          {stepAction && stepAction.stepLevelActions && stepAction.stepLevelActions.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {stepAction.stepLevelActions.map((action, idx) => (
+                <ActionButton
+                  key={idx}
+                  icon={action.icon}
+                  onClick={action.onClick}
+                  title={action.title}
+                />
+              ))}
+            </div>
+          )}
+          {step.accounts && step.accounts.length > 0 && (
+            <div className="border-t border-gray-200 pt-3">
+              <h5 className="text-xs font-medium text-gray-700 mb-2">Account-wise Actions</h5>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-2">
+                {step.accounts.map((account, idx) => {
+                  const _account = accounts.find(acc => acc.id === account.id);
+
+                  if(!["Mutual Funds", "Equities"].includes(_account.type) && name === "Data Back Filling") {
+                    return null;
+                  }
+                  return (
+                    <div key={idx} className="border border-gray-200 rounded-md p-2 bg-white flex flex-col gap-4">
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-1">
+                              <span className="text-xs font-medium text-gray-900">{account.id}</span>
+                              {_account && (
+                                <span className="text-xs text-gray-500">({_account.type})</span>
+                              )}
+                            </div>
+                            <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium ${
+                              account.status === "success"
+                                ? "text-green-600 bg-green-100"
+                                : account.status === "partial"
+                                ? "text-yellow-600 bg-yellow-100"
+                                : "text-red-600 bg-red-100"
+                            }`}>
+                              {account.status}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            {stepAction && stepAction.accountLevelTime && 
+                              <span 
+                                className="text-xs text-gray-500 cursor-help"
+                                title={getTooltipText(account.timestamp)}
+                              >
+                                {getRelativeTime(account.timestamp)}
+                              </span>
+                            }
+                          </div>
+                        </div>
+
+                        {stepAction && stepAction.accountLevelTime && 
+                          <div className="text-xs text-gray-600">
+                            <span className="font-medium">Duration:</span> {account.duration || "--"}
+                          </div>
+                        }
+                      </div>
+                      {stepAction && stepAction.accountLevelActions && stepAction.accountLevelActions.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {stepAction.accountLevelActions.map((action, idx) => (
+                            <ActionButton key={idx} icon={action.icon} onClick={action.onClick} title={action.title} />
+                          ))}
+                        </div>
+                      )}
+
+                      {name === "Data Back Filling" && account.yearlyData && (
+                        <BackfillingYears
+                          yearlyData={account.yearlyData}
+                          accountId={account.id}
+                          index={index}
+                        />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

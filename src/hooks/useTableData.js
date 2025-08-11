@@ -2,10 +2,44 @@
 
 import { useState, useMemo, useCallback } from "react";
 
-export const useTableData = (data, initialFilters = {}, initialSort = null) => {
-  const [searchTerm, setSearchTerm] = useState("");
+export const useTableData = (data, options = {}) => {
+  const {
+    initialFilters = {},
+    initialSortConfig = null,
+    initialSearchTerm = "",
+    filterOptions = {},
+    sortOptions = []
+  } = options;
+
+  const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
   const [filters, setFilters] = useState(initialFilters);
-  const [sortConfig, setSortConfig] = useState(initialSort);
+  const [sortConfig, setSortConfig] = useState(initialSortConfig);
+
+  // Helper function to parse duration strings
+  const parseDurationToMinutes = (duration) => {
+    if (!duration) return 0;
+    
+    const match = duration.match(/(\d+)m\s*(\d+)s?/);
+    if (match) {
+      const minutes = parseInt(match[1]) || 0;
+      const seconds = parseInt(match[2]) || 0;
+      return minutes + (seconds / 60);
+    }
+    
+    // Try to parse just minutes
+    const minutesMatch = duration.match(/(\d+)m/);
+    if (minutesMatch) {
+      return parseInt(minutesMatch[1]) || 0;
+    }
+    
+    // Try to parse just seconds
+    const secondsMatch = duration.match(/(\d+)s/);
+    if (secondsMatch) {
+      return (parseInt(secondsMatch[1]) || 0) / 60;
+    }
+    
+    return 0;
+  };
 
   // Enhanced filtering logic
   const filteredData = useMemo(() => {
@@ -142,32 +176,6 @@ export const useTableData = (data, initialFilters = {}, initialSort = null) => {
     });
   }, [filteredData, sortConfig]);
 
-  // Helper function to parse duration strings
-  const parseDurationToMinutes = (duration) => {
-    if (!duration) return 0;
-    
-    const match = duration.match(/(\d+)m\s*(\d+)s?/);
-    if (match) {
-      const minutes = parseInt(match[1]) || 0;
-      const seconds = parseInt(match[2]) || 0;
-      return minutes + (seconds / 60);
-    }
-    
-    // Try to parse just minutes
-    const minutesMatch = duration.match(/(\d+)m/);
-    if (minutesMatch) {
-      return parseInt(minutesMatch[1]) || 0;
-    }
-    
-    // Try to parse just seconds
-    const secondsMatch = duration.match(/(\d+)s/);
-    if (secondsMatch) {
-      return (parseInt(secondsMatch[1]) || 0) / 60;
-    }
-    
-    return 0;
-  };
-
   const handleSearchChange = useCallback((value) => {
     setSearchTerm(value);
   }, []);
@@ -185,9 +193,9 @@ export const useTableData = (data, initialFilters = {}, initialSort = null) => {
 
   const clearFilters = useCallback(() => {
     setSearchTerm("");
-    setFilters(initialFilters);
-    setSortConfig(initialSort);
-  }, [initialFilters, initialSort]);
+    setFilters({});
+    setSortConfig(null);
+  }, []);
 
   return {
     data: sortedData,

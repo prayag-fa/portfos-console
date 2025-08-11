@@ -7,7 +7,7 @@ export const Sidebar = () => {
     const { getCurrentThemeColors } = useTheme();
     const colors = getCurrentThemeColors();
     return (
-        <div className="w-64" style={{ backgroundColor: colors.primary[600] }}>
+        <div className="w-64 h-screen" style={{ backgroundColor: colors.primary[600] }}>
             <div className="h-full flex flex-col text-white">
                 {/* Logo */}
                 <div className="p-6 border-b" style={{ borderColor: colors.primary[500] }}>

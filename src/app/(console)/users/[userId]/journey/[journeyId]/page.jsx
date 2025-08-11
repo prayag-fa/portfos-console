@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Users, User, BarChart3 } from "lucide-react";
 import Link from 'next/link';
 import { mockJourneyTimeline, stepActions } from "@/lib/data/mockData";
 import JourneySummary from "@/components/journeys/JourneySummary";
@@ -8,6 +8,7 @@ import AccountsOverview from "@/components/journeys/AccountsOverview";
 import TimelineStep from "@/components/timeline/TimelineStep";
 import WebhookModal from "@/components/ui/WebhookModal";
 import { getWebhookData } from "@/lib/services/webhookService";
+import { usePageMetadata } from "@/hooks/usePageMetadata";
 
 export default function JourneyTimelinePage({ params }) {
   const { userId, journeyId } = params;
@@ -17,6 +18,13 @@ export default function JourneyTimelinePage({ params }) {
     step: null,
     accountId: null,
   });
+
+  // Set page metadata
+  usePageMetadata("Journey Timeline", [
+    { label: "Users", href: "/users", icon: <Users className="w-3 h-3" /> },
+    { label: "User Details", href: `/users/${userId}`, icon: <User className="w-3 h-3" /> },
+    { label: "Journey Timeline", href: `/users/${userId}/journey/${journeyId}`, icon: <BarChart3 className="w-3 h-3" />, isLast: true }
+  ]);
 
   const journey = mockJourneyTimeline[userId][parseInt(journeyId) - 1];
 

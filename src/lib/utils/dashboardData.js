@@ -25,27 +25,27 @@ export const calculateDashboardMetrics = () => {
 // Generate data for the three charts
 export const generateActivityData = () => {
   const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  return days.map(day => ({
+  return days.map((day, index) => ({
     day,
-    newUsers: Math.floor(Math.random() * 3) + 1,
-    newJourneys: Math.floor(Math.random() * 5) + 2,
-    newAccounts: Math.floor(Math.random() * 8) + 3
+    newUsers: ((index * 7 + 1) % 3) + 1,
+    newJourneys: ((index * 11 + 2) % 5) + 2,
+    newAccounts: ((index * 13 + 3) % 8) + 3
   }));
 };
 
 export const generateRefreshData = () => {
   const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  return days.map(day => ({
+  return days.map((day, index) => ({
     day,
-    successRate: Math.floor(Math.random() * 20) + 80 // 80-100%
+    successRate: ((index * 17 + 80) % 20) + 80 // 80-100%
   }));
 };
 
 export const generateJourneyMetricsData = () => {
   const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  return days.map(day => ({
+  return days.map((day, index) => ({
     day,
-    avgTime: Math.floor(Math.random() * 10) + 5, // 5-15 minutes
-    successRate: Math.floor(Math.random() * 20) + 75 // 75-95%
+    avgTime: ((index * 19 + 5) % 10) + 5, // 5-15 minutes
+    successRate: ((index * 23 + 75) % 20) + 75 // 75-95%
   }));
 }; 

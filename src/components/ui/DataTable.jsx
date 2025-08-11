@@ -2,6 +2,8 @@
 
 import React from "react";
 import Filters from "./Filters";
+import { TableRowShimmer } from "./Shimmer";
+import EmptyState from "./EmptyState";
 
 export default function DataTable({
   // Table data and configuration
@@ -52,32 +54,20 @@ export default function DataTable({
 
   const renderDefaultEmpty = () => (
     <tr>
-      <td colSpan={columns.length} className="px-4 py-8 text-center text-gray-500">
-        <div className="flex flex-col items-center gap-2">
-          <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-            <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-          </div>
-          <div>
-            <p className="text-sm font-medium text-gray-900">No data found</p>
-            <p className="text-xs text-gray-500">Try adjusting your filters or search terms</p>
-          </div>
-        </div>
+      <td colSpan={columns.length} className="px-4 py-8">
+        <EmptyState 
+          type="search"
+          onAction={onClearFilters}
+        />
       </td>
     </tr>
   );
 
-  const renderLoading = () => (
-    <tr>
-      <td colSpan={columns.length} className="px-4 py-8 text-center">
-        <div className="flex items-center justify-center gap-2">
-          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-          <span className="text-sm text-gray-500">Loading...</span>
-        </div>
-      </td>
-    </tr>
-  );
+  const renderLoading = () => {
+    return Array.from({ length: 5 }).map((_, index) => (
+      <TableRowShimmer key={index} columns={columns.length} />
+    ));
+  };
 
   const renderError = () => (
     <tr>

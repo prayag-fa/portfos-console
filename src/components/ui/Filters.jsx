@@ -15,7 +15,8 @@ export default function Filters({
   filterOptions = {},
   sortOptions = [],
   sortConfig = null,
-  onSortChange
+  onSortChange,
+  onClearFilters
 }) {
 
   const handleFilterChange = (key, value) => {
@@ -47,6 +48,7 @@ export default function Filters({
             options={options}
             onOptionSelect={(option) => handleFilterChange(key, option.value)}
             placeholder={key}
+            data-filter-button
           />
         ))}
 
@@ -57,7 +59,18 @@ export default function Filters({
             isSelected={(option) => sortConfig?.field === option.value && sortConfig?.direction === option.direction}
             icon={<ArrowUpDown className="h-4 w-4" />}
             placeholder="Sort"
+            data-filter-button
           />
+        )}
+
+        {activeFilters && onClearFilters && (
+          <button
+            onClick={onClearFilters}
+            className="px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200"
+            data-clear-filters
+          >
+            Clear All
+          </button>
         )}
       </div>
 

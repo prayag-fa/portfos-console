@@ -45,7 +45,7 @@ export const PATHS = {
   users: "/users",
   userJourneys: (userId) => `/users/${userId}`,
   journeyTimeline: (userId, journeyId) => `/users/${userId}/journey/${journeyId}`,
-  refreshDetails: (userId) => `/users/${userId}/refresh`
+  accounts: (userId) => `/users/${userId}/accounts`
 };
 
 // API endpoints (for future use)

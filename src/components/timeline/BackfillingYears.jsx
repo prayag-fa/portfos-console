@@ -4,13 +4,14 @@ import React, { useState } from "react";
 import { ChevronRight, X } from "lucide-react";
 import { stepActions } from "@/lib/data/mockData";
 import ActionButton from "../ui/ActionButton";
+import { getRelativeTime, getTooltipText } from "@/lib/utils/formatters";
 
 export default function BackfillingYears({ 
   yearlyData, 
   index,
 }) {
-  const [selectedStatus, setSelectedStatus] = React.useState(null);
-  const [showModal, setShowModal] = React.useState(false);
+  const [selectedStatus, setSelectedStatus] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   // Group years by status
   const groupedYears = yearlyData.reduce((acc, yearData) => {
@@ -90,13 +91,14 @@ export default function BackfillingYears({
           })}
         </div>
       </div>
+      
 
       {/* Floating Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                  <div className="bg-white rounded-lg shadow-2xl max-w-md w-full mx-4 max-h-[80vh] overflow-hidden">
+          <div className="bg-white rounded-lg shadow-2xl max-w-md w-full mx-4 max-h-[80vh] overflow-hidden">
           {/* Modal Header */}
-          <div className="flex items-center justify-between p-3 border-b border-gray-200">
+            <div className="flex items-center justify-between p-3 border-b border-gray-200">
               <div className="flex items-center gap-2">
                 <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getStatusConfig(selectedStatus).color}`}>
                   {getStatusConfig(selectedStatus).icon} {selectedStatus} ({selectedYears.length})
@@ -116,25 +118,41 @@ export default function BackfillingYears({
                 {selectedYears.map((yearData) => (
                   <div
                     key={yearData.year}
-                    className="flex items-center justify-between p-2 rounded-md border border-gray-200 bg-gray-50 hover:bg-gray-100 transition-colors duration-200"
+                    className="flex flex-col p-2 gap-4 rounded-md border border-gray-200 bg-gray-50 hover:bg-gray-100 transition-colors duration-200"
                   >
-                    <div className="flex items-center gap-3">
-                      <span className="font-medium text-gray-900">{yearData.year}</span>
-                      <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
-                        yearData.status === "success"
-                          ? "text-green-600 bg-green-100"
-                          : yearData.status === "in_progress"
-                          ? "text-yellow-600 bg-yellow-100"
-                          : yearData.status === "failed"
-                          ? "text-red-600 bg-red-100"
-                          : "text-gray-600 bg-gray-100"
-                      }`}>
-                        {yearData.status}
-                      </span>
+                    <div className="flex flex-col gap-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-3">
+                        <span className="font-medium text-gray-900">{yearData.year}</span>
+                        <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
+                          yearData.status === "success"
+                            ? "text-green-600 bg-green-100"
+                            : yearData.status === "in_progress"
+                            ? "text-yellow-600 bg-yellow-100"
+                            : yearData.status === "failed"
+                            ? "text-red-600 bg-red-100"
+                            : "text-gray-600 bg-gray-100"
+                        }`}>
+                          {yearData.status}
+                        </span>
+                      </div>
+                      {stepActions[index].yearLevelTime && 
+                        <span 
+                          className="text-xs text-gray-500 cursor-help"
+                          title={getTooltipText(yearData.timestamp)}
+                        >
+                          {getRelativeTime(yearData.timestamp)}
+                        </span>
+                      }
                     </div>
-                    
+                    {stepActions[index].yearLevelTime && 
+                      <div className="text-xs text-gray-600">
+                        <span className="font-medium">Duration:</span> {yearData.duration || "--"}
+                      </div>
+                    }
+                    </div>
                     {stepActions[index].yearLevelActions && stepActions[index].yearLevelActions.length > 0 && (
-                      <div className="flex flex-wrap gap-1">
+                      <div className="flex flex-wrap gap-2">
                         {stepActions[index].yearLevelActions.map((action, idx) => (
                           <ActionButton key={idx} icon={action.icon} onClick={action.onClick} title={action.title} />
                         ))}

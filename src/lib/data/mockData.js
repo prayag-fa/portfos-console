@@ -1268,6 +1268,7 @@ export const stepActions = [
         title: "Retrigger Webhook",
       },
     ],
+    stepLevelTime: true,
   },
   {
     name: "Account Details Fetch",
@@ -1290,6 +1291,7 @@ export const stepActions = [
         title: "Retrigger Webhook",
       }
     ],
+    accountLevelTime: true,
   },
   {
     name: "Data Back Filling",
@@ -1317,6 +1319,7 @@ export const stepActions = [
         title: "Re-trigger Data Backfilling",
       },
     ],
+    yearLevelTime: true,
   },
   {
     name: "Analysis",
@@ -1335,6 +1338,7 @@ export const stepActions = [
         title: "Re-trigger Data Backfilling",
       }
     ],
+    stepLevelTime: true,
   },
 ]; 
 

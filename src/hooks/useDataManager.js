@@ -2,11 +2,13 @@
 
 import { useState, useMemo, useCallback } from 'react';
 import { useTableData } from './useTableData';
+import { useUrlParams } from '@/lib/utils/urlParams';
 
 export const useDataManager = (dataType, initialData = []) => {
   const [data, setData] = useState(initialData);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { getParam, setParam, clearParams } = useUrlParams();
 
   // Factory for different data types
   const getConfig = useCallback((type) => {
@@ -91,7 +93,59 @@ export const useDataManager = (dataType, initialData = []) => {
   }, []);
 
   const config = getConfig(dataType);
-  const tableData = useTableData(data);
+  
+  // Get initial values from URL params if available
+  const initialFilters = {};
+  Object.keys(config.filterOptions).forEach(key => {
+    const urlValue = getParam(key);
+    if (urlValue) {
+      initialFilters[key] = urlValue;
+    }
+  });
+  
+  const initialSearchTerm = getParam('search') || "";
+  const initialSortKey = getParam('sort');
+  const initialSortDirection = getParam('direction');
+  const initialSortConfig = initialSortKey && initialSortDirection ? 
+    { key: initialSortKey, direction: initialSortDirection } : null;
+
+  const tableData = useTableData(data, {
+    initialFilters,
+    initialSortConfig,
+    initialSearchTerm,
+    filterOptions: config.filterOptions,
+    sortOptions: config.sortOptions
+  });
+
+  // Enhanced handlers that also update URL params
+  const enhancedOnSearchChange = useCallback((term) => {
+    tableData.onSearchChange(term);
+    setParam('search', term);
+  }, [tableData.onSearchChange, setParam]);
+
+  const enhancedOnFilterChange = useCallback((key, value) => {
+    tableData.onFilterChange(key, value);
+    setParam(key, value);
+  }, [tableData.onFilterChange, setParam]);
+
+  const enhancedOnSortChange = useCallback((config) => {
+    tableData.onSortChange(config);
+    if (config) {
+      setParam('sort', config.key);
+      setParam('direction', config.direction);
+    } else {
+      // Clear sort params
+      setParam('sort', '');
+      setParam('direction', '');
+    }
+  }, [tableData.onSortChange, setParam]);
+
+  const enhancedOnClearFilters = useCallback(() => {
+    tableData.onClearFilters();
+    // Clear all URL params using clearParams
+    const keysToClear = Object.keys(config.filterOptions).concat(['search', 'sort', 'direction']);
+    clearParams(keysToClear);
+  }, [tableData.onClearFilters, clearParams, config.filterOptions]);
 
   const updateData = useCallback((newData) => {
     setData(newData);
@@ -129,6 +183,15 @@ export const useDataManager = (dataType, initialData = []) => {
     setLoadingState,
     setErrorState,
     refreshData,
-    config
+    config,
+    // Enhanced handlers with URL persistence
+    onSearchChange: enhancedOnSearchChange,
+    onFilterChange: enhancedOnFilterChange,
+    onSortChange: enhancedOnSortChange,
+    onClearFilters: enhancedOnClearFilters,
+    // Also expose the original handlers for backward compatibility
+    searchTerm: tableData.searchTerm,
+    filters: tableData.filters,
+    sortConfig: tableData.sortConfig
   };
 }; 

@@ -1,14 +1,22 @@
 "use client";
 import React from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Users, User, FileUser } from "lucide-react";
 import Link from "next/link";
 import { mockRefreshTimeline, refreshStepActions } from "@/lib/data/mockData";
 import TimelineStep from "@/components/timeline/TimelineStep";
 import RefreshSummary from "@/components/refresh/RefreshSummary";
+import { usePageMetadata } from "@/hooks/usePageMetadata";
 
-export default function RefreshDetailsPage({ params }) {
+export default function AccountsPage({ params }) {
   const { userId } = params;
   const refreshData = mockRefreshTimeline[userId];
+
+  // Set page metadata
+  usePageMetadata("User Accounts", [
+    { label: "Users", href: "/users", icon: <Users className="w-3 h-3" /> },
+    { label: "User Details", href: `/users/${userId}`, icon: <User className="w-3 h-3" /> },
+    { label: "User Accounts", href: `/users/${userId}/accounts`, icon: <FileUser className="w-3 h-3" />, isLast: true }
+  ]);
 
   if (!refreshData) {
     return (
@@ -52,7 +60,7 @@ export default function RefreshDetailsPage({ params }) {
 
       {/* Refresh Timeline */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-        <h2 className="text-base font-semibold text-gray-900 mb-4">Refresh Timeline</h2>
+        <h2 className="text-base font-semibold text-gray-900 mb-4">Last Refresh Timeline</h2>
         <div className="space-y-4">
           {refreshData.timeline.map((step, index) => (
             <TimelineStep

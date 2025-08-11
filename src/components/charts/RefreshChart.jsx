@@ -1,16 +1,30 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const RefreshChart = ({ data, title }) => {
   const [tooltip, setTooltip] = useState({ show: false, x: 0, y: 0, data: null });
   const [visibility, setVisibility] = useState({
     successRate: true
   });
+  const [isClient, setIsClient] = useState(false);
 
-  const width = 400;
-  const height = 200;
-  const padding = 40;
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  const containerRef = React.useRef(null);
+  const [dimensions, setDimensions] = React.useState({ width: 400, height: 200 });
+  
+  React.useEffect(() => {
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      setDimensions({ width: rect.width, height: 200 });
+    }
+  }, [isClient]);
+
+  const { width, height } = dimensions;
+  const padding = Math.min(40, width * 0.1); // Responsive padding
   const chartWidth = width - 2 * padding;
   const chartHeight = height - 2 * padding;
   const stepX = chartWidth / (data.length - 1);
@@ -31,8 +45,8 @@ const RefreshChart = ({ data, title }) => {
     if (index >= 0 && index < data.length) {
       setTooltip({
         show: true,
-        x: e.clientX,
-        y: e.clientY,
+        x: x,
+        y: e.clientY - rect.top,
         data: data[index]
       });
     }
@@ -48,6 +62,21 @@ const RefreshChart = ({ data, title }) => {
     }));
   };
 
+  // Don't render chart until client-side to prevent hydration mismatch
+  if (!isClient) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h4 className="text-sm font-medium text-gray-700">{title}</h4>
+          <div className="text-xs text-gray-500">...</div>
+        </div>
+        <div className="text-2xl font-bold text-green-600">+12%</div>
+        <div className="text-xs text-gray-500">last week</div>
+        <div className="h-48 bg-gray-100 rounded animate-pulse"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -57,7 +86,7 @@ const RefreshChart = ({ data, title }) => {
       <div className="text-2xl font-bold text-green-600">+12%</div>
       <div className="text-xs text-gray-500">last week</div>
       
-      <div className="relative">
+      <div ref={containerRef} className="relative w-full" style={{ height: height }}>
         <svg 
           width={width} 
           height={height} 
@@ -95,9 +124,10 @@ const RefreshChart = ({ data, title }) => {
           <div 
             className="absolute bg-white border border-gray-200 rounded-lg shadow-lg p-3 text-xs z-10"
             style={{ 
-              left: tooltip.x + 10, 
-              top: tooltip.y - 40,
-              pointerEvents: 'none'
+              left: tooltip.x + 10 > width - 120 ? tooltip.x - 130 : tooltip.x + 10, 
+              top: tooltip.y - 40 < 10 ? tooltip.y + 10 : tooltip.y - 40,
+              pointerEvents: 'none',
+              maxWidth: '120px'
             }}
           >
             <div className="font-medium mb-1">{tooltip.data.day}</div>

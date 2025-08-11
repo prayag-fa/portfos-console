@@ -27,7 +27,7 @@ export default function ActiveFilters({
   };
 
   return (
-    <div className="mt-4 pt-4 border-t border-gray-200">
+    <div className="mt-2 pt-2 border-t border-gray-200">
       <div className="flex flex-wrap gap-2">
         {searchTerm && (
           <div className="flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
@@ -44,7 +44,7 @@ export default function ActiveFilters({
         {Object.entries(filters).map(([key, value]) => {
           if (!value) return null;
           return (
-            <div key={key} className="flex items-center gap-2 px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm">
+            <div key={key} className="flex items-center gap-2 px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs">
               <span>{key}: {getFilterLabel(key, value)}</span>
               <button
                 onClick={() => removeFilter(key)}

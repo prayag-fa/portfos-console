@@ -73,7 +73,7 @@ export default function Dropdown({
     }
 
     return (
-      <div className="w-full flex items-center justify-between px-3 py-2 text-sm hover:bg-gray-50 transition-colors duration-200">
+      <div className="w-full flex items-center justify-between px-3 py-2 text-xs hover:bg-gray-50 transition-colors duration-200">
         <span className="text-gray-700">{option.label}</span>
         {showCheck && isOptionSelected(option) && (
           <Check className="w-3.5 h-3.5 text-blue-500" />
@@ -86,10 +86,10 @@ export default function Dropdown({
     <div className={`relative ${className}`} ref={ref}>
       <button
         onClick={onToggle}
-        className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200 min-w-[150px] justify-between"
+        className="flex items-center gap-2 px-2 py-1.5 border text-xs border-gray-300 rounded-md hover:bg-gray-50 transition-colors duration-200 min-w-32 justify-between"
       >
         {icon && <span className="text-gray-400">{icon}</span>}
-        <span className="text-sm font-medium text-gray-700">
+        <span className="font-medium text-gray-700">
           {renderSelectedValue()}
         </span>
         <ChevronDown className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-200 ${
