@@ -1,16 +1,17 @@
-"use client";
+'use client';
 
-import { useEffect, useMemo } from "react";
-import { usePageContext } from "@/lib/context/PageContext";
+import { useEffect, useMemo } from 'react';
+
+import { usePageContext } from '@/lib/context/PageContext';
 
 export const usePageMetadata = (title, breadcrumbs = []) => {
   const { setPageTitle, setBreadcrumbs, clearPageMetadata } = usePageContext();
 
   // Memoize breadcrumbs to prevent unnecessary re-renders
-  const memoizedBreadcrumbs = useMemo(() => breadcrumbs, [
-    breadcrumbs.length,
-    ...breadcrumbs.map(crumb => crumb.label + crumb.href)
-  ]);
+  const memoizedBreadcrumbs = useMemo(
+    () => breadcrumbs,
+    [breadcrumbs.length, ...breadcrumbs.map(crumb => crumb.label + crumb.href)]
+  );
 
   useEffect(() => {
     // Set page title

@@ -1,30 +1,30 @@
-import { API_ENDPOINTS } from "@/lib/utils/constants";
+import { API_ENDPOINTS } from '@/lib/utils/constants';
 
 class ApiService {
   constructor() {
-    this.baseURL = process.env.NEXT_PUBLIC_API_URL || "";
+    this.baseURL = process.env.NEXT_PUBLIC_API_URL || '';
   }
 
   async request(endpoint, options = {}) {
     const url = `${this.baseURL}${endpoint}`;
     const config = {
       headers: {
-        "Content-Type": "application/json",
-        ...options.headers,
+        'Content-Type': 'application/json',
+        ...options.headers
       },
-      ...options,
+      ...options
     };
 
     try {
       const response = await fetch(url, config);
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       return await response.json();
     } catch (error) {
-      console.error("API request failed:", error);
+      console.error('API request failed:', error);
       throw error;
     }
   }
@@ -54,9 +54,9 @@ class ApiService {
 
   async triggerRefresh(userId) {
     return this.request(`${API_ENDPOINTS.refresh}/${userId}`, {
-      method: "POST",
+      method: 'POST'
     });
   }
 }
 
-export const apiService = new ApiService(); 
+export const apiService = new ApiService();

@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo } from 'react';
 
 export const useDataTable = (initialData = [], options = {}) => {
   const {
     initialFilters = {},
     initialSortConfig = null,
-    initialSearchTerm = "",
+    initialSearchTerm = '',
     filterOptions = {},
     sortOptions = []
   } = options;
@@ -29,38 +29,38 @@ export const useDataTable = (initialData = [], options = {}) => {
 
   const handleClearFilters = useCallback(() => {
     setFilters({});
-    setSearchTerm("");
+    setSearchTerm('');
     setSortConfig(null);
   }, []);
 
   // Sort handlers
-  const handleSortChange = useCallback((newSortConfig) => {
+  const handleSortChange = useCallback(newSortConfig => {
     setSortConfig(newSortConfig);
   }, []);
 
   // Search handlers
-  const handleSearchChange = useCallback((term) => {
+  const handleSearchChange = useCallback(term => {
     setSearchTerm(term);
   }, []);
 
   // Data update handlers
-  const updateData = useCallback((newData) => {
+  const updateData = useCallback(newData => {
     setData(newData);
   }, []);
 
-  const setLoading = useCallback((loading) => {
+  const setLoading = useCallback(loading => {
     setIsLoading(loading);
   }, []);
 
-  const setErrorState = useCallback((errorState) => {
+  const setErrorState = useCallback(errorState => {
     setError(errorState);
   }, []);
 
   // Computed values
   const hasActiveFilters = useMemo(() => {
-    return Object.values(filters).some(value => 
-      value && value !== '' && value !== 'all'
-    ) || searchTerm;
+    return (
+      Object.values(filters).some(value => value && value !== '' && value !== 'all') || searchTerm
+    );
   }, [filters, searchTerm]);
 
   const activeFiltersCount = useMemo(() => {
@@ -78,28 +78,28 @@ export const useDataTable = (initialData = [], options = {}) => {
     // Data
     data,
     updateData,
-    
+
     // Filters
     filters,
     handleFilterChange,
     handleClearFilters,
     hasActiveFilters,
     activeFiltersCount,
-    
+
     // Search
     searchTerm,
     handleSearchChange,
-    
+
     // Sort
     sortConfig,
     handleSortChange,
-    
+
     // Loading & Error
     isLoading,
     setLoading,
     error,
     setErrorState,
-    
+
     // Options
     filterOptions,
     sortOptions

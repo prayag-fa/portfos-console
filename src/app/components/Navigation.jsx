@@ -1,67 +1,61 @@
-"use client";
+'use client';
 
-import React from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useTheme } from "@/lib/context/ThemeContext";
-import { useAuth } from "@/lib/context/AuthContext";
-import { 
-  LayoutDashboard, 
-  Users, 
-  LogOut,
-  User
-} from "lucide-react";
+import { useCallback } from 'react';
+
+import { usePathname, useRouter } from 'next/navigation';
+
+import { LayoutDashboard, Users } from 'lucide-react';
 
 export default function Navigation() {
   const pathname = usePathname();
-  const { getCurrentThemeColors } = useTheme();
-  const { user, logout } = useAuth();
-  const colors = getCurrentThemeColors();
+  const router = useRouter();
 
-  const isActive = (href) => {
-    if (href === "/" && pathname === "/") return true;
-    if (href !== "/" && pathname.startsWith(href)) return true;
+  const isActive = href => {
+    if (href === '/' && pathname === '/') return true;
+    if (href !== '/' && pathname.startsWith(href)) return true;
     return false;
   };
 
-  return (
-    <div className="flex flex-col h-full">
-      {/* Navigation Links */}
-      <nav className="flex-1 p-4">
-        <div className="space-y-2">
-          <Link
-            href="/dashboard"
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-              isActive("/dashboard")
-                ? "shadow-lg"
-                : "hover:bg-opacity-80"
-            }`}
-            style={{
-              backgroundColor: isActive("/dashboard") ? colors.primary[500] : "transparent",
-              color: isActive("/dashboard") ? "white" : colors.primary[100]
-            }}
-          >
-            <LayoutDashboard className="w-5 h-5" />
-            <span className="font-medium">Dashboard</span>
-          </Link>
+  const handleNavigation = useCallback(
+    href => {
+      // Minimal delay to prevent flash
+      setTimeout(() => {
+        router.push(href);
+      }, 50);
+    },
+    [router]
+  );
 
-          <Link
-            href="/users"
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-              isActive("/users")
-                ? "shadow-lg"
-                : "hover:bg-opacity-80"
+  return (
+    <div className='flex h-full flex-col'>
+      {/* Navigation Links */}
+      <nav className='flex-1 p-4'>
+        <div className='space-y-2'>
+          <button
+            onClick={() => handleNavigation('/dashboard')}
+            className={`flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-150 ease-out w-full text-left ${
+              isActive('/dashboard')
+                ? 'bg-primary-600 text-white shadow-lg'
+                : 'text-primary-100 hover:bg-primary-700 hover:bg-opacity-80 hover:text-white'
             }`}
-            style={{
-              backgroundColor: isActive("/users") ? colors.primary[500] : "transparent",
-              color: isActive("/users") ? "white" : colors.primary[100]
-            }}
           >
-            <Users className="w-5 h-5" />
-            <span className="font-medium">Users</span>
-          </Link>
+            <LayoutDashboard className='size-5' />
+            <span className='font-medium'>Dashboard</span>
+          </button>
+
+          <button
+            onClick={() => handleNavigation('/users')}
+            className={`flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-150 ease-out w-full text-left ${
+              isActive('/users')
+                ? 'bg-primary-600 text-white shadow-lg'
+                : 'text-primary-100 hover:bg-primary-600 hover:bg-opacity-80 hover:text-white'
+            }`}
+          >
+            <Users className='size-5' />
+            <span className='font-medium'>Users</span>
+          </button>
         </div>
       </nav>
     </div>
   );
-} 
+}

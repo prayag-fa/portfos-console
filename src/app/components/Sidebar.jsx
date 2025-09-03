@@ -1,36 +1,32 @@
-"use client";
+'use client';
 
-import { useTheme } from "@/hooks/useTheme";
-import Navigation from "./Navigation";
+import Navigation from './Navigation';
 
 export const Sidebar = () => {
-    const { getCurrentThemeColors } = useTheme();
-    const colors = getCurrentThemeColors();
-    return (
-        <div className="w-64 h-screen" style={{ backgroundColor: colors.primary[600] }}>
-            <div className="h-full flex flex-col text-white">
-                {/* Logo */}
-                <div className="p-6 border-b" style={{ borderColor: colors.primary[500] }}>
-                <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-                    <span className="font-bold text-sm" style={{ color: colors.primary[600] }}>P</span>
-                    </div>
-                    <span className="text-xl font-bold">Portfos Console</span>
-                </div>
-                </div>
-
-                {/* Navigation */}
-                <Navigation />
-
-
-                {/* Footer */}
-                <div className="p-4 border-t" style={{ borderColor: colors.primary[500] }}>
-                    <div className="text-center" style={{ color: colors.primary[200] }}>
-                        <p className="text-xs">© 2024 All Rights Reserved</p>
-                        <p className="mt-1 text-xs">Made by Finarkein</p>
-                    </div>
-                </div>
+  return (
+    <div className='bg-primary-700 h-screen w-64'>
+      <div className='flex h-full flex-col text-white'>
+        {/* Logo */}
+        <div className='border-primary-600 border-b p-6 hover-lift'>
+          <div className='flex items-center gap-3'>
+            <div className='flex size-8 items-center justify-center rounded-full bg-white transition-transform duration-200 hover:scale-110'>
+              <span className='text-primary-700 text-sm font-bold'>P</span>
             </div>
+            <span className='text-xl font-bold'>Portfos Console</span>
+          </div>
         </div>
-    )
-}
+
+        {/* Navigation */}
+        <Navigation />
+
+        {/* Footer */}
+        <div className='border-primary-600 border-t p-4'>
+          <div className='text-primary-200 text-center'>
+            <p className='text-xs'>© 2024 All Rights Reserved</p>
+            <p className='mt-1 text-xs'>Made by Finarkein</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
+import { AlertCircle, AlertTriangle, CheckCircle, Info, X } from 'lucide-react';
+
 import { useAppContext } from '@/lib/context/AppContext';
 
 const NotificationTypes = {
@@ -42,23 +44,23 @@ function NotificationItem({ notification, onClose }) {
 
   return (
     <div
-      className={`fixed top-4 right-4 z-50 max-w-sm w-full transform transition-all duration-300 ease-in-out ${
-        isVisible && !isExiting ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
+      className={`fixed right-4 top-4 z-50 w-full max-w-sm transition-all duration-300 ease-out ${
+        isVisible && !isExiting
+          ? 'translate-x-0 opacity-100 scale-100'
+          : 'translate-x-full opacity-0 scale-95'
       }`}
     >
-      <div className={`flex items-start p-4 rounded-lg border shadow-lg ${type.className}`}>
-        <Icon className="w-5 h-5 mt-0.5 flex-shrink-0" />
-        <div className="ml-3 flex-1">
-          {notification.title && (
-            <h4 className="text-sm font-medium">{notification.title}</h4>
-          )}
-          <p className="text-sm mt-1">{notification.message}</p>
+      <div className={`flex items-start rounded-lg border p-4 shadow-lg ${type.className}`}>
+        <Icon className='mt-0.5 size-5 shrink-0' />
+        <div className='ml-3 flex-1'>
+          {notification.title && <h4 className='text-sm font-medium'>{notification.title}</h4>}
+          <p className='mt-1 text-sm'>{notification.message}</p>
         </div>
         <button
           onClick={handleClose}
-          className="ml-4 flex-shrink-0 opacity-70 hover:opacity-100 transition-opacity"
+          className='ml-4 shrink-0 opacity-70 transition-all duration-200 ease-out hover:opacity-100 hover:scale-110 '
         >
-          <X className="w-4 h-4" />
+          <X className='size-4' />
         </button>
       </div>
     </div>
@@ -72,10 +74,5 @@ export default function NotificationSystem() {
     return null;
   }
 
-  return (
-    <NotificationItem
-      notification={notification}
-      onClose={actions.clearNotification}
-    />
-  );
-} 
+  return <NotificationItem notification={notification} onClose={actions.clearNotification} />;
+}

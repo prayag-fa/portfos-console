@@ -1,14 +1,17 @@
-"use client";
+'use client';
 
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { createContext, useContext, useState, useEffect } from 'react';
+
+import { useRouter } from 'next/navigation';
+
+import { errorLogger } from '@/lib/utils/errorHandling';
 
 const AuthContext = createContext();
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };
@@ -21,11 +24,16 @@ export const AuthProvider = ({ children }) => {
   // Check if user is logged in on mount
   useEffect(() => {
     const checkAuth = () => {
-      const savedUser = localStorage.getItem("user");
-      if (savedUser) {
-        setUser(JSON.parse(savedUser));
+      try {
+        const savedUser = localStorage.getItem('user');
+        if (savedUser) {
+          setUser(JSON.parse(savedUser));
+        }
+      } catch (error) {
+        errorLogger.log(error, { context: 'AuthProvider.checkAuth' });
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
 
     checkAuth();
@@ -33,39 +41,43 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (username, password) => {
     // Simple credential check
-    if (username === "admin" && password === "password") {
+    if (username === 'admin' && password === 'password') {
       const userData = {
         id: 1,
-        username: "admin",
-        name: "Administrator",
-        role: "admin",
+        username: 'admin',
+        name: 'Administrator',
+        role: 'admin',
         loginTime: new Date().toISOString()
       };
-      
+
       setUser(userData);
-      localStorage.setItem("user", JSON.stringify(userData));
+      localStorage.setItem('user', JSON.stringify(userData));
       return { success: true };
     } else {
-      return { 
-        success: false, 
-        error: "Invalid username or password" 
+      return {
+        success: false,
+        error: 'Invalid username or password'
       };
     }
   };
 
   const logout = () => {
-    setUser(null);
-    localStorage.removeItem("user");
-    router.push("/login");
+    try {
+      setUser(null);
+      localStorage.removeItem('user');
+      router.push('/login');
+    } catch (error) {
+      errorLogger.log(error, { context: 'AuthProvider.logout' });
+    }
   };
 
   const isAuthenticated = () => {
     return user !== null;
   };
 
-  const requireAuth = (callback) => {
+  const requireAuth = callback => {
     if (!isAuthenticated()) {
-      router.push("/login");
+      router.push('/login');
       return false;
     }
     return callback ? callback() : true;
@@ -80,9 +92,5 @@ export const AuthProvider = ({ children }) => {
     requireAuth
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

@@ -1,71 +1,71 @@
 // Utility functions for formatting and styling
 
-export const formatDate = (timestamp) => {
-  return new Date(timestamp).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
+export const formatDate = timestamp => {
+  return new Date(timestamp).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
   });
 };
 
-export const formatDateTime = (timestamp) => {
-  return new Date(timestamp).toLocaleString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+export const formatDateTime = timestamp => {
+  return new Date(timestamp).toLocaleString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
   });
 };
 
-export const getStatusColor = (status) => {
+export const getStatusColor = status => {
   switch (status) {
-    case "completed":
-    case "success":
-      return "bg-green-500";
-    case "in_progress":
-      return "bg-yellow-500";
-    case "failed":
-      return "bg-red-500";
+    case 'completed':
+    case 'success':
+      return 'bg-green-500';
+    case 'in_progress':
+      return 'bg-yellow-500';
+    case 'failed':
+      return 'bg-red-500';
     default:
-      return "bg-gray-500";
+      return 'bg-gray-500';
   }
 };
 
-export const getStatusTextColor = (status) => {
+export const getStatusTextColor = status => {
   switch (status) {
-    case "completed":
-    case "success":
-      return "text-green-600 bg-green-100";
-    case "in_progress":
-      return "text-yellow-600 bg-yellow-100";
-    case "failed":
-      return "text-red-600 bg-red-100";
+    case 'completed':
+    case 'success':
+      return 'text-green-600 bg-green-100';
+    case 'in_progress':
+      return 'text-yellow-600 bg-yellow-100';
+    case 'failed':
+      return 'text-red-600 bg-red-100';
     default:
-      return "text-gray-600 bg-gray-100";
+      return 'text-gray-600 bg-gray-100';
   }
 };
 
-export const getSeverityColor = (severity) => {
+export const getSeverityColor = severity => {
   switch (severity) {
-    case "high":
-      return "text-red-600 bg-red-100";
-    case "medium":
-      return "text-yellow-600 bg-yellow-100";
-    case "low":
-      return "text-green-600 bg-green-100";
+    case 'high':
+      return 'text-red-600 bg-red-100';
+    case 'medium':
+      return 'text-yellow-600 bg-yellow-100';
+    case 'low':
+      return 'text-green-600 bg-green-100';
     default:
-      return "text-gray-600 bg-gray-100";
+      return 'text-gray-600 bg-gray-100';
   }
 };
 
-export const getTrendColor = (trend) => {
-  if (trend.startsWith("+")) {
-    return "text-green-600";
-  } else if (trend.startsWith("-")) {
-    return "text-red-600";
+export const getTrendColor = trend => {
+  if (trend.startsWith('+')) {
+    return 'text-green-600';
+  } else if (trend.startsWith('-')) {
+    return 'text-red-600';
   }
-  return "text-gray-600";
+  return 'text-gray-600';
 };
 
 export function getRelativeTime(date) {
@@ -108,4 +108,4 @@ export function getRelativeTime(date) {
 
 export function getTooltipText(date) {
   return formatDateTime(date);
-} 
+}

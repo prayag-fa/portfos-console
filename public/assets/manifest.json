@@ -1,0 +1,8 @@
+{
+  "name": "remote-app",
+  "version": "1.0.0",
+  "description": "Route-level federation for Next.js 14",
+  "routes": {
+    "./App": "./../src/components/remote/RemoteApp"
+  }
+}

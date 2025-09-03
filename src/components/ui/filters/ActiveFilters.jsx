@@ -1,5 +1,4 @@
-import React from "react";
-import { X } from "lucide-react";
+import { X } from 'lucide-react';
 
 export default function ActiveFilters({
   filters,
@@ -7,7 +6,7 @@ export default function ActiveFilters({
   searchTerm,
   onFilterChange,
   onSearchChange,
-  colors
+  colors: _colors
 }) {
   const getFilterLabel = (key, value) => {
     const options = filterOptions[key];
@@ -18,39 +17,44 @@ export default function ActiveFilters({
     return value;
   };
 
-  const removeFilter = (key) => {
+  const removeFilter = key => {
     onFilterChange(key, null);
   };
 
   const clearSearch = () => {
-    onSearchChange("");
+    onSearchChange('');
   };
 
   return (
-    <div className="mt-2 pt-2 border-t border-gray-200">
-      <div className="flex flex-wrap gap-2">
+    <div className='mt-2 border-t border-gray-200 pt-2'>
+      <div className='flex flex-wrap gap-2'>
         {searchTerm && (
-          <div className="flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
-            <span>Search: "{searchTerm}"</span>
+          <div className='flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-800'>
+            <span>Search: &quot;{searchTerm}&quot;</span>
             <button
               onClick={clearSearch}
-              className="hover:bg-blue-200 rounded-full p-1 transition-colors duration-200"
+              className='rounded-full p-1 transition-colors duration-200 hover:bg-blue-200'
             >
-              <X className="h-3 w-3" />
+              <X className='size-3' />
             </button>
           </div>
         )}
-        
+
         {Object.entries(filters).map(([key, value]) => {
           if (!value) return null;
           return (
-            <div key={key} className="flex items-center gap-2 px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs">
-              <span>{key}: {getFilterLabel(key, value)}</span>
+            <div
+              key={key}
+              className='flex items-center gap-2 rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-800'
+            >
+              <span>
+                {key}: {getFilterLabel(key, value)}
+              </span>
               <button
                 onClick={() => removeFilter(key)}
-                className="hover:bg-gray-200 rounded-full p-1 transition-colors duration-200"
+                className='rounded-full p-1 transition-colors duration-200 hover:bg-gray-200'
               >
-                <X className="h-3 w-3" />
+                <X className='size-3' />
               </button>
             </div>
           );

@@ -1,42 +1,53 @@
-"use client";
+'use client';
 
-import React, { useMemo } from "react";
-import { useParams } from "next/navigation";
-import Link from "next/link";
-import { mockJourneys } from "@/lib/data/mockData";
-import { useDataManager } from "@/hooks/useDataManager";
-import { getTableConfig } from "@/lib/config/appConfig";
-import { getRelativeTime, getTooltipText } from "@/lib/utils/formatters";
-import StatusBadge from "@/components/ui/StatusBadge";
-import DataTable from "@/components/ui/DataTable";
-import PageContainer from "@/components/layout/PageContainer";
-import { ChevronRight, Users, User } from "lucide-react";
-import { usePageMetadata } from "@/hooks/usePageMetadata";
+import { useMemo } from 'react';
+
+import { useParams, useRouter } from 'next/navigation';
+
+import { ChevronRight, User, Users } from 'lucide-react';
+
+import PageContainer from '@/components/layout/PageContainer';
+import Button from '@/components/ui/Button';
+import DataTable from '@/components/ui/DataTable';
+import StatusBadge from '@/components/ui/StatusBadge';
+import { useDataManager } from '@/hooks/useDataManager';
+import { usePageMetadata } from '@/hooks/usePageMetadata';
+import { useUserJourneys } from '@/hooks/useUserJourneys';
+import { PATHS } from '@/lib/utils/constants';
+import { getRelativeTime, getTooltipText } from '@/lib/utils/formatters';
 
 export default function UserJourneysPage() {
   const params = useParams();
   const userId = params.userId;
-  const tableConfig = getTableConfig('journeys');
+  const router = useRouter();
 
   // Set page metadata
-  usePageMetadata("User Details", [
-    { label: "Users", href: "/users", icon: <Users className="w-3 h-3" /> },
-    { label: "User Details", href: `/users/${userId}`, icon: <User className="w-3 h-3" />, isLast: true }
+  usePageMetadata('User Details', [
+    { label: 'Users', href: '/users', icon: <Users className='size-3' /> },
+    {
+      label: 'User Details',
+      href: `/users/${userId}`,
+      icon: <User className='size-3' />,
+      isLast: true
+    }
   ]);
 
-  // Get journeys for this user
+  // Fetch journeys from API
+  const { journeys: apiJourneys, loading, error, refetch } = useUserJourneys(userId);
+
+  // Process API journeys for display
   const userJourneys = useMemo(() => {
-    const journeys = mockJourneys[userId] || mockJourneys["default"] || [];
-    return journeys.map(journey => ({
-      ...journey,
-      // Ensure all required fields exist
-      journeyStatus: journey.journeyStatus || journey.status || 'completed',
-      startTime: journey.startTime || journey.createdAt,
-      endTime: journey.endTime || journey.updatedAt,
-      duration: journey.duration || '2m 30s',
-      accountsCount: journey.accounts ? journey.accounts.length : 0
+    return apiJourneys.map(journey => ({
+      id: journey.portfosRequestId,
+      journeyStatus: journey.status?.toLowerCase() || 'unknown',
+      startTime: journey.createdOn,
+      endTime: journey.updatedOn,
+      duration: journey.updatedOn
+        ? `${Math.round((journey.updatedOn - journey.createdOn) / 1000 / 60)}m ${Math.round(((journey.updatedOn - journey.createdOn) / 1000) % 60)}s`
+        : 'In Progress',
+      accountsCount: parseInt(journey.totalAccountsInThisJourney) || 0
     }));
-  }, [userId]);
+  }, [apiJourneys]);
 
   const {
     data: filteredJourneys,
@@ -50,59 +61,77 @@ export default function UserJourneysPage() {
     config
   } = useDataManager('journeys', userJourneys);
 
+  const handleViewJourney = journeyId => {
+    router.push(PATHS.journeyTimeline(userId, journeyId));
+  };
+
   const columns = [
     {
-      key: "id",
-      header: "Journey ID",
-      headerClassName: "w-80",
-      className: "text-sm font-medium text-gray-900"
+      key: 'id',
+      header: 'Journey ID',
+      headerClassName: 'w-80',
+      className: 'text-sm font-medium text-gray-900'
     },
     {
-      key: "journeyStartTime",
-      header: "Start Time",
+      key: 'startTime',
+      header: 'Start Time',
       render: (value, journey) => (
-        <div className="flex-col flex gap-1">
-          <span className="text-sm text-gray-900">
-            {getRelativeTime(value)}
-          </span>
-          <span className="text-xs text-gray-400" title={getTooltipText(journey.startTime)}>
+        <div className='flex flex-col gap-1'>
+          <span className='text-sm text-gray-900'>{getRelativeTime(value)}</span>
+          <span className='text-xs text-gray-400' title={getTooltipText(journey.startTime)}>
             Duration: {journey.duration}
           </span>
         </div>
       )
     },
     {
-      key: "journeyStatus",
-      header: "Status",
-      render: (value) => <StatusBadge status={value} size="sm" />
+      key: 'journeyStatus',
+      header: 'Status',
+      render: value => <StatusBadge status={value} size='sm' />
     },
     {
-      key: "accountsCount",
-      header: "Accounts",
+      key: 'accountsCount',
+      header: 'Accounts',
       render: (value, journey) => (
         <div>
-          <div className="text-sm text-gray-900">{value || 0}</div>
-          {journey.accounts && journey.accounts.length > 0 && (
-            <div className="text-xs text-gray-500">
-              {journey.accounts.map(acc => acc.type).join(', ')}
-            </div>
-          )}
+          <div className='text-sm text-gray-900'>{value || 0}</div>
         </div>
       )
     },
     {
-      key: "actions",
-      header: "",
+      key: 'actions',
+      header: '',
       render: (_, journey) => (
-        <Link
-          href={`/users/${userId}/journey/${journey.id}`}
-          className="inline-flex items-center p-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors duration-150"
-        >
-          <ChevronRight className="w-4 h-4" />
-        </Link>
+        <Button
+          icon={ChevronRight}
+          onClick={() => handleViewJourney(journey.id)}
+          title='View Journey'
+        />
       )
     }
   ];
+
+  // Show loading state
+  if (loading) {
+    return (
+      <PageContainer>
+        <div className='flex items-center justify-center h-64'>
+          <div className='text-lg'>Loading journeys...</div>
+        </div>
+      </PageContainer>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <PageContainer>
+        <div className='flex items-center justify-center h-64'>
+          <div className='text-lg text-red-600'>Error: {error}</div>
+        </div>
+      </PageContainer>
+    );
+  }
 
   return (
     <PageContainer>
@@ -118,7 +147,8 @@ export default function UserJourneysPage() {
         sortOptions={config.sortOptions}
         sortConfig={sortConfig}
         onSortChange={onSortChange}
+        isLoading={loading}
       />
     </PageContainer>
   );
-} 
+}

@@ -1,10 +1,11 @@
-"use client";
+'use client';
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo } from 'react';
+
+import { useRouter, useSearchParams } from 'next/navigation';
 
 // Parse URL search params into an object
-export const parseSearchParams = (searchParams) => {
+export const parseSearchParams = searchParams => {
   const params = {};
   searchParams.forEach((value, key) => {
     params[key] = value;
@@ -13,10 +14,10 @@ export const parseSearchParams = (searchParams) => {
 };
 
 // Convert object to URL search params
-export const createSearchParams = (params) => {
+export const createSearchParams = params => {
   const searchParams = new URLSearchParams();
   Object.entries(params).forEach(([key, value]) => {
-    if (value !== null && value !== undefined && value !== "") {
+    if (value !== null && value !== undefined && value !== '') {
       searchParams.set(key, value);
     }
   });
@@ -32,35 +33,47 @@ export const useUrlParams = () => {
     return parseSearchParams(searchParams);
   }, [searchParams]);
 
-  const updateParams = useCallback((newParams, replace = false) => {
-    const updatedParams = { ...currentParams, ...newParams };
-    const searchParamsString = createSearchParams(updatedParams).toString();
-    const newUrl = searchParamsString ? `?${searchParamsString}` : window.location.pathname;
-    
-    if (replace) {
+  const updateParams = useCallback(
+    (newParams, replace = false) => {
+      const updatedParams = { ...currentParams, ...newParams };
+      const searchParamsString = createSearchParams(updatedParams).toString();
+      const newUrl = searchParamsString ? `?${searchParamsString}` : window.location.pathname;
+
+      if (replace) {
+        router.replace(newUrl);
+      } else {
+        router.push(newUrl);
+      }
+    },
+    [currentParams, router]
+  );
+
+  const clearParams = useCallback(
+    (paramKeys = []) => {
+      const updatedParams = { ...currentParams };
+      paramKeys.forEach(key => {
+        delete updatedParams[key];
+      });
+      const searchParamsString = createSearchParams(updatedParams).toString();
+      const newUrl = searchParamsString ? `?${searchParamsString}` : window.location.pathname;
       router.replace(newUrl);
-    } else {
-      router.push(newUrl);
-    }
-  }, [currentParams, router]);
+    },
+    [currentParams, router]
+  );
 
-  const clearParams = useCallback((paramKeys = []) => {
-    const updatedParams = { ...currentParams };
-    paramKeys.forEach(key => {
-      delete updatedParams[key];
-    });
-    const searchParamsString = createSearchParams(updatedParams).toString();
-    const newUrl = searchParamsString ? `?${searchParamsString}` : window.location.pathname;
-    router.replace(newUrl);
-  }, [currentParams, router]);
+  const getParam = useCallback(
+    (key, defaultValue = '') => {
+      return currentParams[key] || defaultValue;
+    },
+    [currentParams]
+  );
 
-  const getParam = useCallback((key, defaultValue = "") => {
-    return currentParams[key] || defaultValue;
-  }, [currentParams]);
-
-  const setParam = useCallback((key, value, replace = false) => {
-    updateParams({ [key]: value }, replace);
-  }, [updateParams]);
+  const setParam = useCallback(
+    (key, value, replace = false) => {
+      updateParams({ [key]: value }, replace);
+    },
+    [updateParams]
+  );
 
   return {
     currentParams,
@@ -79,7 +92,7 @@ export const useTableFilters = (defaultFilters = {}) => {
     const urlFilters = {};
     Object.keys(defaultFilters).forEach(key => {
       const value = getParam(key, defaultFilters[key]);
-      if (value && value !== "all") {
+      if (value && value !== 'all') {
         urlFilters[key] = value;
       }
     });
@@ -87,36 +100,45 @@ export const useTableFilters = (defaultFilters = {}) => {
   }, [currentParams, defaultFilters, getParam]);
 
   const searchTerm = useMemo(() => {
-    return getParam("search", "");
+    return getParam('search', '');
   }, [getParam]);
 
   const sortConfig = useMemo(() => {
-    const sortKey = getParam("sort", "");
-    const sortDirection = getParam("direction", "");
+    const sortKey = getParam('sort', '');
+    const sortDirection = getParam('direction', '');
     if (sortKey && sortDirection) {
       return { key: sortKey, direction: sortDirection };
     }
     return null;
   }, [getParam]);
 
-  const updateFilters = useCallback((newFilters) => {
-    updateParams(newFilters);
-  }, [updateParams]);
+  const updateFilters = useCallback(
+    newFilters => {
+      updateParams(newFilters);
+    },
+    [updateParams]
+  );
 
-  const updateSearch = useCallback((term) => {
-    updateParams({ search: term });
-  }, [updateParams]);
+  const updateSearch = useCallback(
+    term => {
+      updateParams({ search: term });
+    },
+    [updateParams]
+  );
 
-  const updateSort = useCallback((config) => {
-    if (config) {
-      updateParams({ sort: config.key, direction: config.direction });
-    } else {
-      clearParams(["sort", "direction"]);
-    }
-  }, [updateParams, clearParams]);
+  const updateSort = useCallback(
+    config => {
+      if (config) {
+        updateParams({ sort: config.key, direction: config.direction });
+      } else {
+        clearParams(['sort', 'direction']);
+      }
+    },
+    [updateParams, clearParams]
+  );
 
   const clearAllFilters = useCallback(() => {
-    const keysToClear = Object.keys(defaultFilters).concat(["search", "sort", "direction"]);
+    const keysToClear = Object.keys(defaultFilters).concat(['search', 'sort', 'direction']);
     clearParams(keysToClear);
   }, [clearParams, defaultFilters]);
 

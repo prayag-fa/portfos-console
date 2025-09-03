@@ -1,8 +1,10 @@
-"use client";
+'use client';
 
-import { useState, useMemo, useCallback } from 'react';
-import { useTableData } from './useTableData';
+import { useCallback, useEffect, useState } from 'react';
+
 import { useUrlParams } from '@/lib/utils/urlParams';
+
+import { useTableData } from './useTableData';
 
 export const useDataManager = (dataType, initialData = []) => {
   const [data, setData] = useState(initialData);
@@ -10,11 +12,15 @@ export const useDataManager = (dataType, initialData = []) => {
   const [error, setError] = useState(null);
   const { getParam, setParam, clearParams } = useUrlParams();
 
+  useEffect(() => {
+    setData(initialData);
+  }, [initialData]);
+
   // Factory for different data types
-  const getConfig = useCallback((type) => {
+  const getConfig = useCallback(type => {
     const configs = {
       users: {
-        searchFields: ['clientUserId', 'status'],
+        searchFields: ['fnrkUserId', 'status'],
         filterOptions: {
           status: [
             { value: 'all', label: 'All Status' },
@@ -42,7 +48,7 @@ export const useDataManager = (dataType, initialData = []) => {
           ]
         },
         sortOptions: [
-          { key: 'clientUserId', label: 'User ID' },
+          { key: 'fnrkUserId', label: 'User ID' },
           { key: 'journeyCount', label: 'Journey Count' },
           { key: 'accountsLinked', label: 'Accounts Count' },
           { key: 'status', label: 'Status' }
@@ -93,7 +99,7 @@ export const useDataManager = (dataType, initialData = []) => {
   }, []);
 
   const config = getConfig(dataType);
-  
+
   // Get initial values from URL params if available
   const initialFilters = {};
   Object.keys(config.filterOptions).forEach(key => {
@@ -102,12 +108,14 @@ export const useDataManager = (dataType, initialData = []) => {
       initialFilters[key] = urlValue;
     }
   });
-  
-  const initialSearchTerm = getParam('search') || "";
+
+  const initialSearchTerm = getParam('search') || '';
   const initialSortKey = getParam('sort');
   const initialSortDirection = getParam('direction');
-  const initialSortConfig = initialSortKey && initialSortDirection ? 
-    { key: initialSortKey, direction: initialSortDirection } : null;
+  const initialSortConfig =
+    initialSortKey && initialSortDirection
+      ? { key: initialSortKey, direction: initialSortDirection }
+      : null;
 
   const tableData = useTableData(data, {
     initialFilters,
@@ -118,27 +126,36 @@ export const useDataManager = (dataType, initialData = []) => {
   });
 
   // Enhanced handlers that also update URL params
-  const enhancedOnSearchChange = useCallback((term) => {
-    tableData.onSearchChange(term);
-    setParam('search', term);
-  }, [tableData.onSearchChange, setParam]);
+  const enhancedOnSearchChange = useCallback(
+    term => {
+      tableData.onSearchChange(term);
+      setParam('search', term);
+    },
+    [tableData.onSearchChange, setParam]
+  );
 
-  const enhancedOnFilterChange = useCallback((key, value) => {
-    tableData.onFilterChange(key, value);
-    setParam(key, value);
-  }, [tableData.onFilterChange, setParam]);
+  const enhancedOnFilterChange = useCallback(
+    (key, value) => {
+      tableData.onFilterChange(key, value);
+      setParam(key, value);
+    },
+    [tableData.onFilterChange, setParam]
+  );
 
-  const enhancedOnSortChange = useCallback((config) => {
-    tableData.onSortChange(config);
-    if (config) {
-      setParam('sort', config.key);
-      setParam('direction', config.direction);
-    } else {
-      // Clear sort params
-      setParam('sort', '');
-      setParam('direction', '');
-    }
-  }, [tableData.onSortChange, setParam]);
+  const enhancedOnSortChange = useCallback(
+    config => {
+      tableData.onSortChange(config);
+      if (config) {
+        setParam('sort', config.key);
+        setParam('direction', config.direction);
+      } else {
+        // Clear sort params
+        setParam('sort', '');
+        setParam('direction', '');
+      }
+    },
+    [tableData.onSortChange, setParam]
+  );
 
   const enhancedOnClearFilters = useCallback(() => {
     tableData.onClearFilters();
@@ -147,32 +164,35 @@ export const useDataManager = (dataType, initialData = []) => {
     clearParams(keysToClear);
   }, [tableData.onClearFilters, clearParams, config.filterOptions]);
 
-  const updateData = useCallback((newData) => {
+  const updateData = useCallback(newData => {
     setData(newData);
     setError(null);
   }, []);
 
-  const setLoadingState = useCallback((isLoading) => {
+  const setLoadingState = useCallback(isLoading => {
     setLoading(isLoading);
   }, []);
 
-  const setErrorState = useCallback((errorMessage) => {
+  const setErrorState = useCallback(errorMessage => {
     setError(errorMessage);
     setLoading(false);
   }, []);
 
-  const refreshData = useCallback(async (refreshFunction) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const result = await refreshFunction();
-      updateData(result);
-    } catch (err) {
-      setErrorState(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [updateData, setErrorState]);
+  const refreshData = useCallback(
+    async refreshFunction => {
+      try {
+        setLoading(true);
+        setError(null);
+        const result = await refreshFunction();
+        updateData(result);
+      } catch (err) {
+        setErrorState(err.message);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [updateData, setErrorState]
+  );
 
   return {
     ...tableData,
@@ -194,4 +214,4 @@ export const useDataManager = (dataType, initialData = []) => {
     filters: tableData.filters,
     sortConfig: tableData.sortConfig
   };
-}; 
+};

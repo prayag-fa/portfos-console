@@ -1,8 +1,10 @@
-"use client";
+'use client';
 
-import React, { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/lib/context/AuthContext";
+import { useEffect } from 'react';
+
+import { useRouter } from 'next/navigation';
+
+import { useAuth } from '@/lib/context/AuthContext';
 
 export default function RootPage() {
   const router = useRouter();
@@ -11,19 +13,19 @@ export default function RootPage() {
   useEffect(() => {
     if (!isLoading) {
       if (isAuthenticated()) {
-        router.push("/dashboard");
+        router.push('/dashboard');
       } else {
-        router.push("/login");
+        router.push('/login');
       }
     }
   }, [isLoading, isAuthenticated, router]);
 
   // Show loading while determining redirect
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-        <p className="mt-4 text-sm text-gray-600">Loading...</p>
+    <div className='flex min-h-screen items-center justify-center bg-gray-50'>
+      <div className='text-center'>
+        <div className='mx-auto size-12 animate-spin rounded-full border-b-2 border-blue-600' />
+        <p className='mt-4 text-sm text-gray-600'>Loading...</p>
       </div>
     </div>
   );

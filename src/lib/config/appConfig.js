@@ -4,7 +4,7 @@ export const APP_CONFIG = {
   name: 'Portfos Console',
   version: '1.0.0',
   description: 'Self Help Portal Dashboard',
-  
+
   // API configuration
   api: {
     baseUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api',
@@ -12,21 +12,21 @@ export const APP_CONFIG = {
     retryAttempts: 3,
     retryDelay: 1000
   },
-  
+
   // Cache configuration
   cache: {
     defaultTTL: 5 * 60 * 1000, // 5 minutes
     maxSize: 100,
     cleanupInterval: 60 * 1000 // 1 minute
   },
-  
+
   // Performance configuration
   performance: {
     enableMonitoring: process.env.NODE_ENV === 'development',
     logRenderCounts: process.env.NODE_ENV === 'development',
     enableProfiling: process.env.NODE_ENV === 'development'
   },
-  
+
   // UI configuration
   ui: {
     defaultPageSize: 10,
@@ -35,7 +35,7 @@ export const APP_CONFIG = {
     notificationDuration: 5000,
     debounceDelay: 300
   },
-  
+
   // Feature flags
   features: {
     enableNotifications: true,
@@ -44,7 +44,7 @@ export const APP_CONFIG = {
     enablePerformanceMonitoring: true,
     enableAnalytics: false
   },
-  
+
   // Table configurations
   tables: {
     users: {
@@ -129,14 +129,14 @@ export const APP_CONFIG = {
       ]
     }
   },
-  
+
   // Dashboard configuration
   dashboard: {
     refreshInterval: 30 * 1000, // 30 seconds
     chartAnimationDuration: 1000,
     maxDataPoints: 50
   },
-  
+
   // Error handling
   errors: {
     showUserFriendlyMessages: true,
@@ -149,7 +149,7 @@ export const APP_CONFIG = {
 // Environment-specific configurations
 export const getEnvironmentConfig = () => {
   const env = process.env.NODE_ENV;
-  
+
   switch (env) {
     case 'development':
       return {
@@ -164,7 +164,7 @@ export const getEnvironmentConfig = () => {
           enablePerformanceMonitoring: true
         }
       };
-      
+
     case 'production':
       return {
         ...APP_CONFIG,
@@ -178,17 +178,17 @@ export const getEnvironmentConfig = () => {
           enablePerformanceMonitoring: false
         }
       };
-      
+
     default:
       return APP_CONFIG;
   }
 };
 
 // Configuration utilities
-export const getConfig = (path) => {
+export const getConfig = path => {
   const keys = path.split('.');
   let value = APP_CONFIG;
-  
+
   for (const key of keys) {
     if (value && typeof value === 'object' && key in value) {
       value = value[key];
@@ -196,7 +196,7 @@ export const getConfig = (path) => {
       return undefined;
     }
   }
-  
+
   return value;
 };
 
@@ -204,22 +204,22 @@ export const setConfig = (path, value) => {
   const keys = path.split('.');
   const lastKey = keys.pop();
   let current = APP_CONFIG;
-  
+
   for (const key of keys) {
     if (!(key in current)) {
       current[key] = {};
     }
     current = current[key];
   }
-  
+
   current[lastKey] = value;
 };
 
 // Feature flag utilities
-export const isFeatureEnabled = (featureName) => {
+export const isFeatureEnabled = featureName => {
   return APP_CONFIG.features[featureName] === true;
 };
 
-export const getTableConfig = (tableName) => {
+export const getTableConfig = tableName => {
   return APP_CONFIG.tables[tableName] || APP_CONFIG.tables.users;
-}; 
+};

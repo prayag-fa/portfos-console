@@ -1,11 +1,11 @@
-import { mockUsers, mockJourneys } from "@/lib/data/mockData";
+import { mockJourneys, mockUsers } from '@/lib/data/mockData';
 
 // Calculate metrics from actual data
 export const calculateDashboardMetrics = () => {
   const totalUsers = mockUsers.length;
   const totalJourneys = Object.values(mockJourneys).flat().length;
   const totalAccounts = mockUsers.reduce((sum, user) => sum + user.accountsLinked, 0);
-  
+
   // Calculate journey success rate
   const allJourneys = Object.values(mockJourneys).flat();
   const completedJourneys = allJourneys.filter(j => j.journeyStatus === 'completed').length;
@@ -48,4 +48,4 @@ export const generateJourneyMetricsData = () => {
     avgTime: ((index * 19 + 5) % 10) + 5, // 5-15 minutes
     successRate: ((index * 23 + 75) % 20) + 75 // 75-95%
   }));
-}; 
+};
