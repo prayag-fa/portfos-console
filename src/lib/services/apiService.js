@@ -60,3 +60,30 @@ class ApiService {
 }
 
 export const apiService = new ApiService();
+
+// Auth
+export const getAccessToken = () => {
+  if (typeof window === 'undefined') return null;
+  return sessionStorage.getItem('accessToken');
+};
+
+export const getRefreshToken = () => {
+  if (typeof window === 'undefined') return null;
+  return sessionStorage.getItem('refreshToken');
+};
+
+export const setTokens = ({ accessToken, refreshToken }) => {
+  if (accessToken) {
+    sessionStorage.setItem('accessToken', accessToken);
+  }
+  if (refreshToken) {
+    sessionStorage.setItem('refreshToken', refreshToken);
+  }
+};
+
+export const clearTokens = () => {
+  if (typeof window === 'undefined') return;
+
+  sessionStorage.removeItem('accessToken');
+  sessionStorage.removeItem('refreshToken');
+};

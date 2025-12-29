@@ -1,14 +1,21 @@
 import axios from 'axios';
+import { getAccessToken } from './apiService';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-const API_TOKEN = process.env.NEXT_PUBLIC_TOKEN;
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    Authorization: `Bearer ${API_TOKEN}`,
     'Content-Type': 'application/json'
   }
+});
+
+apiClient.interceptors.request.use(config => {
+  const token = getAccessToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
 
 export const fetchUsers = async ({ page = 0, size = 20 } = {}) => {
@@ -71,3 +78,5 @@ export const triggerAnalysis = async fnrkUserId => {
     throw error;
   }
 };
+
+export default apiClient;
