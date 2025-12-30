@@ -29,24 +29,6 @@ export const AuthProvider = ({ children }) => {
   console.log('API_BASE_URL: ', API_BASE_URL);
   console.log('WORKSPACE: ', WORKSPACE);
 
-  // Check if user is logged in on mount
-  useEffect(() => {
-    const checkAuth = () => {
-      try {
-        const savedUser = localStorage.getItem('user');
-        if (savedUser) {
-          setUser(JSON.parse(savedUser));
-        }
-      } catch (error) {
-        errorLogger.log(error, { context: 'AuthProvider.checkAuth' });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkAuth();
-  }, []);
-
   const login = async (username, password) => {
     console.log('Logging in user:', username, ' ', password);
 
@@ -89,15 +71,19 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Restore session on reload
+  // Restore session on reload if tokens exist else logout
   useEffect(() => {
     try {
       const accessToken = sessionStorage.getItem('accessToken');
+
       if (accessToken) {
         setUser({ isAuthenticated: true });
+      } else {
+        logout();
       }
     } catch (error) {
       errorLogger.log(error, { context: 'AuthProvider.restoreSession' });
+      logout();
     } finally {
       setIsLoading(false);
     }

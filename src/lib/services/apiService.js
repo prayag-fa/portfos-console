@@ -87,3 +87,28 @@ export const clearTokens = () => {
   sessionStorage.removeItem('accessToken');
   sessionStorage.removeItem('refreshToken');
 };
+
+// Refresh token state
+let isRefreshingAccessToken = false;
+let requestQueue = [];
+
+// Subscribe a request to be retried after token refresh
+export const subscribeTokenRefresh = callback => {
+  requestQueue.push(callback);
+};
+
+// Retry all queued requests with new token
+export const onRefreshed = accessToken => {
+  requestQueue.forEach(cb => cb(accessToken));
+  requestQueue = [];
+};
+
+// Clear queued requests (on logout / failure)
+export const clearRequestQueue = () => {
+  requestQueue = [];
+};
+
+export const isTokenRefreshing = () => isRefreshingAccessToken;
+export const setTokenRefreshing = value => {
+  isRefreshingAccessToken = value;
+};
