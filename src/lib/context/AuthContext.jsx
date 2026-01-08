@@ -1,10 +1,11 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
 import { errorLogger } from '@/lib/utils/errorHandling';
+import { clearTokens, setTokens } from '../services/apiService';
 
 const AuthContext = createContext();
 
@@ -21,54 +22,77 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  // Check if user is logged in on mount
-  useEffect(() => {
-    const checkAuth = () => {
-      try {
-        const savedUser = localStorage.getItem('user');
-        if (savedUser) {
-          setUser(JSON.parse(savedUser));
-        }
-      } catch (error) {
-        errorLogger.log(error, { context: 'AuthProvider.checkAuth' });
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // envs
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const WORKSPACE = process.env.NEXT_PUBLIC_WORKSPACE;
 
-    checkAuth();
-  }, []);
+  console.log('API_BASE_URL: ', API_BASE_URL);
+  console.log('WORKSPACE: ', WORKSPACE);
 
   const login = async (username, password) => {
-    // Simple credential check
-    if (username === 'admin' && password === 'password') {
-      const userData = {
-        id: 1,
-        username: 'admin',
-        name: 'Administrator',
-        role: 'admin',
-        loginTime: new Date().toISOString()
-      };
+    console.log('Logging in user:', username, ' ', password);
 
-      setUser(userData);
-      localStorage.setItem('user', JSON.stringify(userData));
+    try {
+      setIsLoading(true);
+
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/${process.env.NEXT_PUBLIC_WORKSPACE}/login`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            clientUserId: username,
+            password
+          })
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        return { success: false, error: data?.errorMsg };
+      }
+
+      setTokens({
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken
+      });
+
+      setUser({
+        fnrkUserId: data.fnrkUserId
+      });
+
       return { success: true };
-    } else {
-      return {
-        success: false,
-        error: 'Invalid username or password'
-      };
+    } catch (error) {
+      errorLogger.log(error, { context: 'AuthProvider.login' });
+      return { success: false, error: 'Login failed' };
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const logout = () => {
+  // Restore session on reload if tokens exist else logout
+  useEffect(() => {
     try {
-      setUser(null);
-      localStorage.removeItem('user');
-      router.push('/login');
+      const accessToken = sessionStorage.getItem('accessToken');
+
+      if (accessToken) {
+        setUser({ isAuthenticated: true });
+      } else {
+        logout();
+      }
     } catch (error) {
-      errorLogger.log(error, { context: 'AuthProvider.logout' });
+      errorLogger.log(error, { context: 'AuthProvider.restoreSession' });
+      logout();
+    } finally {
+      setIsLoading(false);
     }
+  }, []);
+
+  const logout = () => {
+    clearTokens();
+    setUser(null);
+    router.push('/login');
   };
 
   const isAuthenticated = () => {

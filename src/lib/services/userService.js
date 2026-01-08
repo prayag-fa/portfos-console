@@ -1,19 +1,102 @@
 import axios from 'axios';
+import {
+  clearRequestQueue,
+  clearTokens,
+  getAccessToken,
+  isTokenRefreshing,
+  onRefreshed,
+  setTokenRefreshing,
+  subscribeTokenRefresh
+} from './apiService';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-const API_TOKEN = process.env.NEXT_PUBLIC_TOKEN;
+import { refreshAccessToken } from './authService';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    Authorization: `Bearer ${API_TOKEN}`,
     'Content-Type': 'application/json'
   }
 });
 
+/**
+ * REQUEST INTERCEPTOR
+ * Pause requests if refresh is in progress
+ */
+apiClient.interceptors.request.use(config => {
+  const token = getAccessToken();
+  const pauseRequestsOnRefreshToken = config.pauseRequestsOnRefreshToken ?? true;
+  const bypassInterceptor = config.bypassInterceptor ?? false;
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  // If refresh is happening & request should pause
+  if (!bypassInterceptor && pauseRequestsOnRefreshToken && isTokenRefreshing()) {
+    return new Promise(resolve => {
+      subscribeTokenRefresh(newToken => {
+        config.headers.Authorization = `Bearer ${newToken}`;
+        resolve(config);
+      });
+    });
+  }
+
+  return config;
+});
+
+/**
+ * RESPONSE INTERCEPTOR
+ * Handle 401 + refresh token
+ */
+apiClient.interceptors.response.use(
+  response => response,
+  async error => {
+    const originalRequest = error.config;
+
+    const bypassInterceptor = originalRequest?.bypassInterceptor ?? false;
+    const pauseRequestsOnRefreshToken = originalRequest?.pauseRequestsOnRefreshToken ?? true;
+
+    if (error.response?.status !== 401 || bypassInterceptor) {
+      return Promise.reject(error);
+    }
+
+    // If refresh already happening → queue request
+    if (pauseRequestsOnRefreshToken && isTokenRefreshing()) {
+      return new Promise(resolve => {
+        subscribeTokenRefresh(token => {
+          originalRequest.headers.Authorization = `Bearer ${token}`;
+          resolve(apiClient(originalRequest));
+        });
+      });
+    }
+
+    try {
+      setTokenRefreshing(true);
+
+      const newAccessToken = await refreshAccessToken();
+
+      onRefreshed(newAccessToken);
+      setTokenRefreshing(false);
+
+      originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+      return apiClient(originalRequest);
+    } catch (refreshError) {
+      setTokenRefreshing(false);
+      clearRequestQueue();
+      clearTokens();
+      window.location.href = '/login';
+      return Promise.reject(refreshError);
+    }
+  }
+);
+
+const WORKSPACE = process.env.NEXT_PUBLIC_WORKSPACE;
+
 export const fetchUsers = async ({ page = 0, size = 20 } = {}) => {
   try {
-    const response = await apiClient.get('/users', {
+    const response = await apiClient.get(`/v1/${WORKSPACE}/u/console/users`, {
       params: { page, size }
     });
     return response.data;
@@ -71,3 +154,5 @@ export const triggerAnalysis = async fnrkUserId => {
     throw error;
   }
 };
+
+export default apiClient;

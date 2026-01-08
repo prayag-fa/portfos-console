@@ -60,3 +60,55 @@ class ApiService {
 }
 
 export const apiService = new ApiService();
+
+// Auth
+export const getAccessToken = () => {
+  if (typeof window === 'undefined') return null;
+  return sessionStorage.getItem('accessToken');
+};
+
+export const getRefreshToken = () => {
+  if (typeof window === 'undefined') return null;
+  return sessionStorage.getItem('refreshToken');
+};
+
+export const setTokens = ({ accessToken, refreshToken }) => {
+  if (accessToken) {
+    sessionStorage.setItem('accessToken', accessToken);
+  }
+  if (refreshToken) {
+    sessionStorage.setItem('refreshToken', refreshToken);
+  }
+};
+
+export const clearTokens = () => {
+  if (typeof window === 'undefined') return;
+
+  sessionStorage.removeItem('accessToken');
+  sessionStorage.removeItem('refreshToken');
+};
+
+// Refresh token state
+let isRefreshingAccessToken = false;
+let requestQueue = [];
+
+// Subscribe a request to be retried after token refresh
+export const subscribeTokenRefresh = callback => {
+  requestQueue.push(callback);
+};
+
+// Retry all queued requests with new token
+export const onRefreshed = accessToken => {
+  requestQueue.forEach(cb => cb(accessToken));
+  requestQueue = [];
+};
+
+// Clear queued requests (on logout / failure)
+export const clearRequestQueue = () => {
+  requestQueue = [];
+};
+
+export const isTokenRefreshing = () => isRefreshingAccessToken;
+export const setTokenRefreshing = value => {
+  isRefreshingAccessToken = value;
+};
