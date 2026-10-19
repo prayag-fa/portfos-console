@@ -1,0 +1,43 @@
+{
+    "data": [
+        {
+            "clientUserId": "user123",
+            "createdOn": "2026-10-16T16:56:28.501+00:00",
+            "recentConsentOn": "2026-10-16T16:56:28.501+00:00",
+            "accounts": [
+                {
+                    "fipId": "123",
+                    "fipName": "fip1",
+                    "fiType": "DEPOSIT",
+                    "fnrkAccountId": "123",
+                    "maskedAccountNumber": "XXXX1234",
+                    "consentStatus": "ACTIVE",
+                    "consentExpiry": "2027-10-16 16:56:20.523",
+                    "updatedOn": "2026-10-16T16:56:28.501+00:00"
+                },
+                {
+                    "fipId": "321",
+                    "fipName": "fip2",
+                    "fiType": "MUTUAL_FUNDS",
+                    "fnrkAccountId": "321",
+                    "maskedAccountNumber": "XXXX4321",
+                    "consentStatus": "REVOKED",
+                    "consentExpiry": "2027-05-04 04:11:42.798",
+                    "updatedOn": "2026-10-16T16:56:28.501+00:00"
+                }
+            ],
+            "consentJourneys": [
+                {
+                    "requestId": "123",
+                    "status": "COMPLETED",
+                    "updatedOn": "2026-10-16T16:56:28.501+00:00"
+                },
+                {
+                    "requestId": "321",
+                    "status": "ABANDONED",
+                    "updatedOn": "2026-10-16T16:56:28.501+00:00"
+                }
+            ]
+        }
+    ]
+}
